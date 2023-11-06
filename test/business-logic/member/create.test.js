@@ -42,7 +42,7 @@ describe('Business logic: Member: Create', () => {
     }
   });
 
-  it('Should throws an error when the user is not the admin', async () => {
+  it('Should create a member when the user is the admin', async () => {
     checkClubExists.mockReturnValue({});
     checkIfUserIsAdmin.mockReturnValue({});
     MemberModel.create.mockReturnValue({ name: 'miembro1' });

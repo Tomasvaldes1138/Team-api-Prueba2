@@ -5,6 +5,8 @@ import checkIfTheUserIsTheClubAdmin from '../../../src/business-logic/club/check
 import checkClubExists from '../../../src/utils/check-club-exists.util';
 import mongoose from 'mongoose';
 import HTTPError from '../../../src/errors/http.error';
+import subscriptionErrors from '../../../src/errors/subscription.errors';
+import clubErrors from '../../../src/errors/club.errors';
 
 jest.mock('../../../src/business-logic/club/check-is-admin');
 jest.mock('../../../src/utils/check-club-exists.util')
@@ -43,18 +45,31 @@ describe('Business logic: Subscription: Create', () => {
 
     it('Should throws an error when the club doesnt exists', async () => { 
         const clubId = createObjectId();
-        const error = new HTTPError({ name: 'ReferenceError', message: 'some-clubId is not defined', code: 404 });
-        checkClubExists.mockRejectedValue(error);
+        checkClubExists.mockRejectedValue(new HTTPError({ ...subscriptionErrors.clubNotFound, code: 404 }));
 
         try {
             await createSub({...subscription, clubId})
         }catch(error){
             expect(checkClubExists).toHaveBeenCalled();
             expect(error).not.toBeNull();
-            expect(error.name).toEqual('ReferenceError');
-            expect(error.message).toEqual('some-clubId is not defined');
+            expect(error.name).toEqual(subscriptionErrors.clubNotFound.name);
+            expect(error.message).toEqual(subscriptionErrors.clubNotFound.message);
+            expect(error.statusCode).toEqual(404);
         }
-
     })
 
+    it('Should throws an error when the user is not the admin', async () => { 
+        const clubId = createObjectId();
+        checkClubExists.mockReturnValue({});
+        checkIfTheUserIsTheClubAdmin.mockRejectedValue(new HTTPError({ ...clubErrors.userIsNotTheAdmin, code: 403 }));
+        try {
+            await createSub({ ...subscription, clubId })
+        } catch (error) {
+            expect(checkClubExists).toHaveBeenCalled();
+            expect(error).not.toBeNull();
+            expect(error.name).toEqual(clubErrors.userIsNotTheAdmin.name);
+            expect(error.message).toEqual(clubErrors.userIsNotTheAdmin.message);
+            expect(error.statusCode).toEqual(403);
+        }
+    })
 })

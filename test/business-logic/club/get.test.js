@@ -2,7 +2,6 @@ import { expect, jest } from '@jest/globals';
 import getClub from '../../../src/business-logic/club/get';
 import ClubModel from '../../../src/models/club/club.model';
 import mongoose from 'mongoose';
-import e from 'cors';
 
 jest.mock('../../../src/models/club/club.model');
 
@@ -13,20 +12,22 @@ describe('Business logic: Club: Get club Id', () => {
 
     afterEach(async () => {
         jest.resetAllMocks();
-        await ClubModel.deleteMany({});
     });
+    const club = {
+        name: 'club-test',
+        description: 'description',
+      };
 
     it('Should get the club by id', async () => {
         const clubId = createObjectId();
-
-        ClubModel.findById.mockResolvedValue({ _id: clubId });
-
-        const result=await expect(getClub(clubId)).resolves.not.toThrow();
+        ClubModel.findById.mockResolvedValue({ ...club, clubId});
+        const result = await getClub(clubId)
         expect(ClubModel.findById).toHaveBeenCalled();
         expect(result).not.toBeNull();
-        
+        expect(result.name).toEqual(club.name);
     })
-    it('Should throw an error when the club doesnt exists', async () => { 
+    
+    it('Should throw an error when the IdClub doesnt exists', async () => { 
         const clubId = createObjectId();
         ClubModel.findById.mockResolvedValue(null);
         try {

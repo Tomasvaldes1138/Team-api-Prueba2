@@ -34,6 +34,7 @@ describe('Business logic: Member: List members by club', () => {
         checkIfTheUserIsTheClubAdmin.mockReturnValue({});
         const members = [];
         MemberModel.find.mockReturnValue(members);
+        
         const result = await listByClub({ clubId: clubId, userId: adminId });
         expect(MemberModel.find).toHaveBeenCalled();
         expect(result).toEqual(members);

@@ -13,8 +13,8 @@ describe('Business logic: Club: Check is admin', () => {
 
     afterEach(async () => {
         jest.resetAllMocks();
-        await ClubModel.deleteMany({});
     });
+    
 
     it('Should verificate if the user is the admin of the club', async () => {
         const adminId = createObjectId();
@@ -36,6 +36,7 @@ describe('Business logic: Club: Check is admin', () => {
             await checkIfTheUserIsTheClubAdmin({ clubId, userId: adminId })
         } catch (error) {
             await expect(checkIfTheUserIsTheClubAdmin({ clubId, adminId })).rejects.toThrow(HTTPError);
+            expect(error.message).toEqual('this users is not the admin of this club');
             expect(ClubModel.findOne).toHaveBeenCalled();
         }
 
