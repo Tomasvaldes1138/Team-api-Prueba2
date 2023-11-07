@@ -2,17 +2,12 @@ import { expect, jest } from '@jest/globals';
 import UserModel from '../../../src/models/user/user.model';
 import getOne from '../../../src/business-logic/users/get-one';
 import mongoose from 'mongoose';
-
+import { buildUser } from '../../factories/user.factory';
 
 jest.mock('../../../src/models/user/user.model');
 
 describe('Business logic: User: Get one user', () => { 
-    const user = {
-        name: 'usuario',
-        email: 'correo3@gmail.com',
-        password: '123',
-        isAdmin: false 
-    }
+    const user = buildUser({ isAdmin: true });
 
     afterEach(async () => {
         jest.resetAllMocks();
