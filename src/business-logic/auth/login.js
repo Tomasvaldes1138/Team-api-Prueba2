@@ -29,6 +29,10 @@ async function login({ email, password }) {
     select: ['password', 'isAdmin'],
   });
 
+  if (!user) {
+    throw new HTTPError({ ...authErrors.login.invalidCredentials, code: 400 });
+  }
+
   await comparePassword({ user, candidatePassword: password });
 
   const token = await generateToken({
